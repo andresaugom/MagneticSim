@@ -1,13 +1,14 @@
 # %%
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
 # %%
 # ------------------- Parámetros del sistema -------------------
-coils_number = 10             # Número de espiras
-coils_step = 1               # Distancia entre espiras (en z)
+coils_number = 3             # Número de espiras
+coils_step = 0.1               # Distancia entre espiras (en z)
 coils_radius = 1             # Radio de cada espira
-coils_points = 100           # Puntos por espira (resolución)
+coils_points = 1000           # Puntos por espira (resolución)
 
 i = 300                     # Corriente en Amperes
 mu_0 = 4 * np.pi * 1e-7     # Permeabilidad del vacío
@@ -72,7 +73,7 @@ dB = km * (np.cross(dl, r_vector)/r_norm3[..., np.newaxis])
 B = np.sum(dB, axis=0)
 # %%
 # ------------------- Mapa de calor de la magnitud de B en el plano z = 0 -------------------
-x_index = np.argmin(np.abs(x_dim))  # Índice del plano más cercano a z=0
+x_index = np.argmin(x_dim)  # Índice del plano más cercano a z=0
 
 # Extrae componentes del campo en el plano z=0
 By_plane = B[..., 1][x_index, :, :]
@@ -94,4 +95,25 @@ plt.axis('equal')
 plt.grid(True, linestyle='--', alpha=0.3)
 plt.show()
 
+# %%
+# ------------------- Visualización del campo magnético en 3D -------------------
+# Selecciona un subconjunto de puntos para visualizar (para no saturar el gráfico)
+step = 2  # Ajusta este valor para más/menos flechas
+Xq = Bx[::step, ::step, ::step]
+Yq = By[::step, ::step, ::step]
+Zq = Bz[::step, ::step, ::step]
+U = B[::step, ::step, ::step, 0]
+V = B[::step, ::step, ::step, 1]
+W = B[::step, ::step, ::step, 2]
+
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+ax.quiver(Xq, Yq, Zq, U, V, W, length=0.2, normalize=True, color='blue', linewidth=0.5)
+
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+ax.set_title('Campo magnético 3D (quiver)')
+plt.tight_layout()
+plt.show()
 # %%
