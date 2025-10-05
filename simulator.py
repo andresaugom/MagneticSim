@@ -3,16 +3,22 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
+
+
 # %%
 # ------------------- Parámetros del sistema -------------------
 coils_number = 3             # Número de espiras
-coils_step = 0.1               # Distancia entre espiras (en z)
+coils_step = 0.1             # Distancia entre espiras (en z)
 coils_radius = 1             # Radio de cada espira
-coils_points = 1000           # Puntos por espira (resolución)
+coils_points = 20            # Puntos por espira (resolución)
 
-i = 300                     # Corriente en Amperes
+i = 0                       # Corriente en Amperes
 mu_0 = 4 * np.pi * 1e-7     # Permeabilidad del vacío
 km = mu_0 * i / (4 * np.pi) # Constante de Biot-Savart
+
+g = -9.81                   # Aceleración de la gravedad (m/s^2)
+
+
 
 # %%
 # ------------------- Geometría de una espira -------------------
@@ -27,6 +33,8 @@ coil_pos_z = np.zeros_like(coil_pos_x)  # Espira plana en z = 0
 dl_x = np.diff(coil_pos_x, append=coil_pos_x[0])
 dl_y = np.diff(coil_pos_y, append=coil_pos_y[0])
 dl_z = np.zeros_like(dl_x)
+
+
 
 # %%
 # ------------------- Repetición en espiras -------------------
@@ -47,6 +55,17 @@ for z_pos in np.arange(0, coils_number * coils_step + coils_step, coils_step):
 
 r_primes = np.concatenate(all_segment_origins, axis=0)
 dl_vectors = np.concatenate(all_dl_vectors, axis=0)
+
+
+
+# %%
+# ------------------- Creacion de un iman en caida libre -------------------
+m_mag = 0.1             # Masa del imán (kg)
+mu_mag = 0.5            # Momento magnetico del iman
+v0 = 0.0                # Velocidad inicial (m/s)
+t = np.array([0])       # Vector de tiempo
+dt = 0.1                # Intervalo de tiempo (s)
+
 
 # %%
 # ------------------- Cálculo del campo magnético -------------------
@@ -69,8 +88,12 @@ dl = dl_vectors[:, np.newaxis, np.newaxis, np.newaxis, :]
 r_norm = np.linalg.norm(r_vector, axis=-1)
 r_norm3 = np.where(r_norm == 0, np.inf, r_norm**3)
 
+# Esto debe estar dentro del ciclo que calculara la fem en cada paso de tiempo.
 dB = km * (np.cross(dl, r_vector)/r_norm3[..., np.newaxis])
 B = np.sum(dB, axis=0)
+
+
+
 # %%
 # ------------------- Mapa de calor de la magnitud de B en el plano z = 0 -------------------
 x_index = np.argmin(x_dim)  # Índice del plano más cercano a z=0
@@ -95,6 +118,8 @@ plt.axis('equal')
 plt.grid(True, linestyle='--', alpha=0.3)
 plt.show()
 
+
+
 # %%
 # ------------------- Visualización del campo magnético en 3D -------------------
 # Selecciona un subconjunto de puntos para visualizar (para no saturar el gráfico)
@@ -116,4 +141,7 @@ ax.set_zlabel('Z')
 ax.set_title('Campo magnético 3D (quiver)')
 plt.tight_layout()
 plt.show()
+
+
+
 # %%

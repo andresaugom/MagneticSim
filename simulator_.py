@@ -27,7 +27,7 @@ magnet_final_z = -4.0              # Posición Z final del imán
 magnet_current_z = magnet_initial_z # Posición Z actual del imán
 
 # %%
-# --- Geometría de las espiras (Tu código original) ---
+# --- Geometría de las espiras ---
 thetas = np.linspace(0, 2*np.pi, coils_points, endpoint=False)
 
 # Posiciones (en plano XY)
@@ -108,7 +108,6 @@ def magnetic_field_from_coil_at_point(r_point, r_primes, dl_vectors, km):
     return B_total
 
 # --- Preparación para la simulación de movimiento ---
-# Puntos para el centro de las bobinas donde mediremos el campo
 center_point = np.array([coil_center_x, coil_center_y, coil_center_z])
 
 # Listas para almacenar los resultados del campo en el centro
@@ -138,8 +137,6 @@ ax_3d.set_ylim([-1.5, 1.5])
 ax_3d.set_zlim([-4.5, 4.5]) # Ajustar límites Z para la trayectoria del imán
 
 # Representación del imán (usando un pequeño cilindro o un rectángulo 3D para simplificar)
-# Para este caso, un simple punto o una línea vertical para el dipolo es suficiente.
-# Vamos a usar un pequeño rectángulo para el imán
 magnet_patch_3d, = ax_3d.plot([], [], [], 'o', color='red', markersize=10, label='Imán')
 magnet_poles_text = []
 magnet_poles_text.append(ax_3d.text2D(0, 0, '', transform=ax_3d.transAxes, color='white')) # Norte
